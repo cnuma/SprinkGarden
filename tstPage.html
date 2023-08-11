@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>cNuma GS (Garden Sprinkler)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+   
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity"sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	
+  </head>
+
+
+
+  <style type="text/css">
+    .button {
+      background-color: #4CAF50; /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+
+
+    .row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .blockLeft {
+      display:flex;
+      width: 100px;
+      float: left;
+      justify-content: center;
+      align-content: center;
+    }
+
+    .blockRight {
+      display:flex;
+      width: 100px;
+      float: right;
+      justify-content: center;
+      align-content: center;
+    }
+	
+	.modal { 
+    position: fixed; 
+    top: 3%; 
+    right: 3%; 
+    left: 3%; 
+    width: auto; 
+    margin: 0; 
+	}
+	
+	.modal-body { 
+		height: 60%; 
+	}
+
+
+    
+  </style>
+  
+<body style="background-color: #f9e79f " onload="refreshProg()">
+  <center>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-6 col-sm-4" id=titre>
+        <H2>cNuma GS
+      </div>
+      <div class="col-6 col-sm-4" id=heureESP>  
+        hh:mm:ss</H2>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-6 col-sm-4">
+        <button class="button" onclick="send(1)">Sprinkler ON</button>
+      </div>
+      <div class="col-6 col-sm-4">
+        <button class="button" onclick="send(0)">Sprinkler OFF</button><BR>
+      </div>
+    </div>
+
+    
+<!--  
+    <div class="row"><h2>
+      Vanne status: <span id="adc_val">0</span><br><br>
+      Humidity : <span id="state">NA</span>
+    </h2>
+    </div>
+-->
+  
+    <div class="row" >
+      <div class="col-12 col-sm-12" id="progirri">
+        <table class="table">
+          <TR>
+            <TH>Heure
+            <TH>Minute
+            <TH>Durée
+            <TH>Jour
+            <TH>Status
+           <TR>
+		   
+		   <tr class="ligneProg" data-prog=0><td>P<b>0</b></td><td>FLASH Non Init !</td><td>255H255M</td><td>255</td><td>Lundi<br>Mardi<br>Mercredi<br>Jeudi<br>Vendredi<br>Samedi<br>Dimanche<br></td><td>255</td></tr>
+		   
+		   <tr class="ligneProg" data-prog=1><td>P<b>1</b></td><td>FLASH Non Init !</td><td>255H255M</td><td>255</td><td>Lundi<br>Mardi<br>Mercredi<br>Jeudi<br>Vendredi<br>Samedi<br>Dimanche<br></td><td>255</td></tr>
+		   
+		   <tr class="ligneProg" data-prog=2><td>P<b>2</b></td><td>FLASH Non Init !</td><td>255H255M</td><td>255</td><td>Lundi<br>Mardi<br>Mercredi<br>Jeudi<br>Vendredi<br>Samedi<br>Dimanche<br></td><td>255</td></tr>
+		   
+		   
+         </TABLE>
+       </div>
+    </div>
+
+  </div>
+
+
+  <div class="modal " tabindex="-1" id="modalProg">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitre">Programation Pxx</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="corpsModale">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+<script>
+  
+  function send(led_sts) 
+  {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("state").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "led_set?state="+led_sts, true);
+    xhttp.send();
+  }
+
+
+  
+  //setInterval(function() {
+  //  getHeureESP();
+  //}, 1000); 
+
+  function getHeureESP() {
+    var xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("heureESP").innerHTML =
+        this.responseText;
+      }
+    };   
+    
+    xhttp.open("GET", "heureESP");
+    xhttp.send();
+  }
+
+  function refreshProg() {
+    var xhttp = new XMLHttpRequest();
+
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("progirri").innerHTML =
+        this.responseText;
+      }
+    };   
+    
+    xhttp.open("GET", "progirri");
+    xhttp.send();
+  }
+
+  //const lignesProg = document.getElementsByClassName('ligneProg');
+  //const lignesProg = document.querySelector(".ligneProg");
+/*
+  for (const ligneProg of lignesProg) {
+    ligneProg.addEventListener('click', function handleClick(event) {
+      console.log('ligneProg clicked', event);
+      ligneProg.setAttribute('style', 'background-color: yellow;');
+    });
+  }
+*/
+  
+  $(document).on('click', '.ligneProg', function() {
+      console.log('ligneProg clicked', event);
+	  console.log('data-prog:' + $(this).data("prog"));
+	  
+	  $("#modalTitre").html("<H2>Programmation pour P" + $(this).data("prog"));
+	  
+      $('#modalProg').modal('show');
+  });
+
+  
+</script>
+
+
+
+</center>
+</body>
+</html>
